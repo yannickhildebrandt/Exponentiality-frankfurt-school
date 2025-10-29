@@ -37,6 +37,13 @@ st.markdown(
             color: #d0d4e4;
             margin-bottom: 2rem;
         }
+        .intro-card {
+            background: linear-gradient(135deg, rgba(105,130,255,0.25), rgba(0,28,70,0.55));
+            border-radius: 16px;
+            padding: 1.1rem 1.6rem;
+            margin-bottom: 1.2rem;
+            box-shadow: 0 12px 35px rgba(0,0,0,0.35);
+        }
         .story-card {
             background: linear-gradient(135deg, rgba(180,192,255,0.16), rgba(55,76,128,0.12));
             border-radius: 18px;
@@ -44,9 +51,6 @@ st.markdown(
             box-shadow: 0 14px 45px rgba(15, 32, 67, 0.35);
             margin-bottom: 1.5rem;
             color: #f5f7fb;
-        }
-        .story-card strong {
-            color: #9be15d;
         }
         .story-quote {
             font-style: italic;
@@ -128,6 +132,9 @@ def render_cover_image(url, caption):
         unsafe_allow_html=True
     )
 
+def render_intro(text):
+    st.markdown(f"<div class='intro-card'>{text}</div>", unsafe_allow_html=True)
+
 # ------------------------------------------------------
 # Hero-Bereich
 # ------------------------------------------------------
@@ -175,16 +182,23 @@ tab1, tab2, tab3, tab4 = st.tabs([
 # Tab 1: Schachbrett-Legende
 # ------------------------------------------------------
 with tab1:
+    render_intro(
+        "Am Morgen der Audienz tritt ein Gelehrter vor den König und präsentiert das Schachspiel. "
+        "Als Belohnung verlangt er nur Reis auf den Feldern des Brettes – jedes Mal doppelt so viel wie zuvor. "
+        "Der Hof schmunzelt, ahnt aber nicht, dass diese Verdopplung das Reich an den Rand der Kapitulation bringt."
+    )
+
     render_cover_image(
-        "https://images.unsplash.com/photo-1501004318641-b39e6451bec6?auto=format&fit=crop&w=1600&q=80",
+        "https://i.postimg.cc/gjrmYdF2/pierre-bamin-Ldilh-Dx3sk-unsplash.jpg",
         "Reis, soweit das Auge reicht – und doch nur ein Vorgeschmack auf Exponentialität."
     )
 
     st.markdown(
         """
         <div class="story-card">
-            <strong>Szene:</strong> Der König lacht über den „bescheidenen“ Wunsch nach verdoppelten Reiskörnern pro Schachfeld.
-            Nach wenigen Reihen füllen sich Scheunen und Speicher – die Logistik am Hof gerät ins Chaos, der Kornpreis explodiert.
+            In alten Chroniken heißt es, der König lachte über den „bescheidenen“ Wunsch nach verdoppelten Reiskörnern pro Feld.
+            Doch nach wenigen Reihen füllten sich Scheunen, Speicher und schließlich ganze Städte. Erst dann begriff der Hof,
+            welche Macht in einer einfachen Verdopplung steckt.
         </div>
         """,
         unsafe_allow_html=True
@@ -221,19 +235,19 @@ with tab1:
         metric_row[1].metric("Kumuliert bis Feld", human_number(koerner_gesamt))
         metric_row[2].metric("Gewicht (t)", human_number(gewicht_tonnen))
 
-        metric_row_caption = st.columns(3, gap="large")
-        metric_row_caption[0].caption(f"Exakt: {format_number(koerner_auf_feld)} Körner")
-        metric_row_caption[1].caption(f"Exakt: {format_number(koerner_gesamt)} Körner")
-        metric_row_caption[2].caption(f"Exakt: {format_number(gewicht_tonnen, 2)} t")
+        caption_row = st.columns(3, gap="large")
+        caption_row[0].caption(f"Exakt: {format_number(koerner_auf_feld)} Körner")
+        caption_row[1].caption(f"Exakt: {format_number(koerner_gesamt)} Körner")
+        caption_row[2].caption(f"Exakt: {format_number(gewicht_tonnen, 2)} t")
 
         metric_row2 = st.columns(2, gap="large")
         metric_row2[0].metric("Gewichtsvergleich", best_comparison(gewicht_tonnen, gewicht_vergleiche))
         metric_row2[1].metric("Flächenbedarf", best_comparison(flaeche_m2, flaechen_vergleiche))
-        metric_row2_caption = st.columns(2, gap="large")
-        metric_row2_caption[0].caption(f"Referenzen: 40 t – 520 Mio. t")
-        metric_row2_caption[1].caption(f"Referenzen: 420 m² – 2,3 Mio. m²")
+        caption_row2 = st.columns(2, gap="large")
+        caption_row2[0].caption("Referenzen: 40 t – 520 Mio. t")
+        caption_row2[1].caption("Referenzen: 420 m² – 2,3 Mio. m²")
 
-        st.caption("Der Großteil des Reisbergs entsteht auf den allerletzten Feldern – typisch für exponentielle Prozesse.")
+        st.caption("Der Großteil des Reisbergs entsteht auf den letzten Feldern – typisch für exponentielle Prozesse.")
 
     with st.expander("Visualisierung & Details"):
         df = pd.DataFrame({
@@ -257,15 +271,21 @@ with tab1:
 # Tab 2: Zinseszins vs. Zeit
 # ------------------------------------------------------
 with tab2:
+    render_intro(
+        "Frankfurt, Rooftop-Bar: Zwei Absolventen stoßen auf ihren Karrierestart an. "
+        "Beide haben gleich viel gespart – doch nur eine Person hat ihre Zinsen stets reinvestiert. "
+        "Im Abendlicht offenbart der Depotvergleich, wie stark Exponentialität Vermögen treibt."
+    )
+
     render_cover_image(
-        "https://images.unsplash.com/photo-1521572267360-ee0c2909d518?auto=format&fit=crop&w=1600&q=80",
+        "https://i.postimg.cc/ZRR1Ncf3/andre-taissin-5OUMf1Mr5p-U-unsplash.jpg",
         "Der Zinseszins ist der leise Architekt beim Vermögensaufbau."
     )
 
     st.markdown(
         """
         <div class="story-card">
-            <strong>Szene:</strong> Zwei Kommilitonen sparen gleich viel. Lara lässt Erträge im Depot, Tim entnimmt sie für Urlaube.
+            Lara lässt jeden Ertrag im Depot, Tim investiert gleich viel, gönnt sich aber jährlich die Zinsen.
             25 Jahre später zeigt die Skyline, wie weit Exponentialität Lara getragen hat – Tims Depot blieb linear.
         </div>
         """,
@@ -321,11 +341,11 @@ with tab2:
         cols[1].metric("Eigenleistung", human_number(eigenleistung))
         cols[2].metric("Erarbeitete Zinsen", human_number(zinsgewinne))
         cols[3].metric("Vorsprung vs. linear", human_number(linear_vorsprung))
-        caption_cols = st.columns(4, gap="large")
-        caption_cols[0].caption(f"Exakt: {format_number(endkapital, 2)} €")
-        caption_cols[1].caption(f"Exakt: {format_number(eigenleistung, 2)} €")
-        caption_cols[2].caption(f"Exakt: {format_number(zinsgewinne, 2)} €")
-        caption_cols[3].caption(f"Exakt: {format_number(linear_vorsprung, 2)} €")
+        cap_cols = st.columns(4, gap="large")
+        cap_cols[0].caption(f"Exakt: {format_number(endkapital, 2)} €")
+        cap_cols[1].caption(f"Exakt: {format_number(eigenleistung, 2)} €")
+        cap_cols[2].caption(f"Exakt: {format_number(zinsgewinne, 2)} €")
+        cap_cols[3].caption(f"Exakt: {format_number(linear_vorsprung, 2)} €")
 
         if zinsgewinne > eigenleistung:
             st.success("Ihr Kapital arbeitet härter als Ihre Einzahlungen – die exponentielle Phase ist erreicht.")
@@ -334,16 +354,22 @@ with tab2:
 # Tab 3: Viraler Dominoeffekt
 # ------------------------------------------------------
 with tab3:
+    render_intro(
+        "Ein Startup veröffentlicht seine nachhaltige Kreditkarte in Social Media. "
+        "Ein einziger Post entfacht eine Kette: Jede Kundin überzeugt weitere Freundinnen – "
+        "die Monitoring-Screens im Headquarter leuchten und das Support-Team kommt ins Schwitzen."
+    )
+
     render_cover_image(
-        "https://images.unsplash.com/photo-1529333166437-7750a6dd5a70?auto=format&fit=crop&w=1600&q=80",
+        "https://i.postimg.cc/76jwYdxh/fusion-medical-animation-rnr8D3FNUNY-unsplash.jpg",
         "Wenn eine Idee den Nerv trifft, vervielfacht sie sich in Wellen."
     )
 
     st.markdown(
         """
         <div class="story-card">
-            <strong>Szene:</strong> Eine nachhaltige Kreditkarte startet mit einem Influencer.
-            Jede Nutzerin zieht im Schnitt 1,7 weitere an. Die Dashboard-Lichter in der Zentrale schlagen Alarm: Support und Supply skalieren plötzlich exponentiell.
+            Die Kampagne trifft einen Nerv: Jeder neue Kunde bringt durchschnittlich 1,7 weitere mit.
+            In wenigen Wellen schießt die Nutzung durch die Decke – Netzwerkeffekte in Reinform.
         </div>
         """,
         unsafe_allow_html=True
@@ -400,10 +426,10 @@ with tab3:
         cols[0].metric("Gesamt erreicht", human_number(gesamt))
         cols[1].metric("Vergleich", best_comparison(gesamt, vergleich_pop))
         cols[2].metric("Letzte Welle", f"{anteil_letzte_welle:.0%}")
-        captions = st.columns(3, gap="large")
-        captions[0].caption(f"Exakt: {format_number(gesamt, 0)} Personen")
-        captions[1].caption("Vergleiche: Stadion – Nation")
-        captions[2].caption("Anteil an allen erreichten Personen")
+        cap_cols = st.columns(3, gap="large")
+        cap_cols[0].caption(f"Exakt: {format_number(gesamt, 0)} Personen")
+        cap_cols[1].caption("Vergleiche: Stadion – Nation")
+        cap_cols[2].caption("Anteil an allen erreichten Personen")
 
         if faktor <= 1:
             st.warning("Multiplikator ≤ 1: Der Trend stirbt aus. Exponentielles Momentum beginnt erst jenseits von 1.")
@@ -414,16 +440,22 @@ with tab3:
 # Tab 4: SaaS-Hypergrowth
 # ------------------------------------------------------
 with tab4:
+    render_intro(
+        "Pitch-Deck im Boardroom: Das junge SaaS-Team zeigt 12 % monatliches Wachstum. "
+        "Ein Investor hebt die Augenbrauen – denn 12 % im Monat bedeutet eine Verdopplung in sechs Monaten. "
+        "Cashflow, Server, Hiring – alles muss in exponentiellen Kategorien gedacht werden."
+    )
+
     render_cover_image(
-        "https://images.unsplash.com/photo-1521737604893-d14cc237f11d?auto=format&fit=crop&w=1600&q=80",
+        "https://i.postimg.cc/BbWfGFgr/austin-distel-rxp-Th-Owu-Vg-E-unsplash.jpg",
         "Wenn Product-Market-Fit trifft, rast das Wachstum wie eine Rakete."
     )
 
     st.markdown(
         """
         <div class="story-card">
-            <strong>Szene:</strong> Ein SaaS-Team präsentiert 12 % monatliches Wachstum. Ein Investor zeigt:
-            Das bedeutet eine Verdopplung in unter sechs Monaten – Server, Cashflow, Team müssen in völlig neuen Dimensionen denken.
+            Der 3D-holografische MRR-Chart schießt wie eine Rakete nach oben.
+            Das Team spürt: Jetzt entscheidet die Fähigkeit, exponentielles Wachstum zu managen – nicht nur zu wünschen.
         </div>
         """,
         unsafe_allow_html=True
@@ -480,11 +512,11 @@ with tab4:
         cols[1].metric("Lineares Ziel", human_number(gesamt_linear))
         cols[2].metric("Zusätzliche FTE", human_number(fte_gap))
         cols[3].metric("Anteil letzter Monat", f"{anteil_letzter_monat:.0%}")
-        captions = st.columns(4, gap="large")
-        captions[0].caption(f"Exakt: {format_number(gesamt_compound, 0)} €")
-        captions[1].caption(f"Exakt: {format_number(gesamt_linear, 0)} €")
-        captions[2].caption(f"Gesamtbedarf: {format_number(erforderliche_fte, 1)} FTE")
-        captions[3].caption("Vom gesamten Wachstum in den Planmonaten")
+        cap_cols = st.columns(4, gap="large")
+        cap_cols[0].caption(f"Exakt: {format_number(gesamt_compound, 0)} €")
+        cap_cols[1].caption(f"Exakt: {format_number(gesamt_linear, 0)} €")
+        cap_cols[2].caption(f"Gesamtbedarf: {format_number(erforderliche_fte, 1)} FTE")
+        cap_cols[3].caption("Vom gesamten Wachstum im Planzeitraum")
 
         st.caption("Fast die Hälfte des Gesamtwachstums passiert in den letzten Monaten – Hypergrowth braucht Vorbereitung.")
 
