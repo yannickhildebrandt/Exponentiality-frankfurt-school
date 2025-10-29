@@ -66,29 +66,53 @@ st.markdown(
             color: #1f4b99;
             font-weight: 600;
         }
+        .image-frame {
+            width: 100%;
+            padding-top: 56%;
+            border-radius: 18px;
+            background-size: cover;
+            background-position: center;
+            box-shadow: 0 18px 45px rgba(31, 75, 153, 0.18);
+            margin-bottom: 0.6rem;
+        }
+        .image-caption {
+            text-align: center;
+            font-size: 0.95rem;
+            color: #4f5d75;
+            margin-bottom: 1.5rem;
+        }
     </style>
     """,
     unsafe_allow_html=True
 )
 
+# ------------------------------------------------------
 # Hilfsfunktionen
+# ------------------------------------------------------
 def format_number(value, decimals=0):
     return f"{value:,.{decimals}f}".replace(",", "X").replace(".", ",").replace("X", ".")
 
 def best_comparison(value, comparison_list):
-    """
-    Liefert den passendsten Vergleich für einen gegebenen Wert.
-    comparison_list: Liste aus Tupeln (Bezeichnung, Basiswert)
-    """
+    if value <= 0:
+        name, reference = comparison_list[0]
+        return f"0× {name}"
     sorted_comparisons = sorted(comparison_list, key=lambda x: x[1])
     for name, reference in reversed(sorted_comparisons):
         if value >= reference:
             factor = value / reference
             return f"{format_number(factor, 1)}× {name}"
-    # Wenn nichts passt, kleinstes Objekt nehmen
     name, reference = sorted_comparisons[0]
     factor = value / reference
     return f"{format_number(factor, 1)}× {name}"
+
+def render_cover_image(url, caption):
+    st.markdown(
+        f"""
+        <div class="image-frame" style="background-image: url('{url}');"></div>
+        <p class="image-caption">{caption}</p>
+        """,
+        unsafe_allow_html=True
+    )
 
 # ------------------------------------------------------
 # Hero-Bereich
@@ -123,10 +147,9 @@ with hero_col1:
         unsafe_allow_html=True
     )
 with hero_col2:
-    st.image(
+    render_cover_image(
         "https://images.unsplash.com/photo-1545239351-1141bd82e8a6?auto=format&fit=crop&w=1600&q=80",
-        caption="Wenn Wachstum explodiert, verändern sich Welten.",
-        use_column_width=True
+        "Wenn Wachstum explodiert, verändern sich Welten."
     )
 
 st.markdown("---")
@@ -143,10 +166,9 @@ tab1, tab2, tab3, tab4 = st.tabs([
 # Tab 1: Schachbrett-Legende
 # ------------------------------------------------------
 with tab1:
-    st.image(
+    render_cover_image(
         "https://images.unsplash.com/photo-1501004318641-b39e6451bec6?auto=format&fit=crop&w=1600&q=80",
-        caption="Reis, so weit das Auge reicht – und doch nur ein Vorgeschmack auf exponentielles Wachstum.",
-        use_column_width=True
+        "Reis, so weit das Auge reicht – und doch nur ein Vorgeschmack auf exponentielles Wachstum."
     )
 
     st.markdown(
@@ -172,16 +194,16 @@ with tab1:
         gewicht_pro_korn_g = 0.025
         gewicht_tonnen = koerner_gesamt * gewicht_pro_korn_g / 1_000_000
 
-        flaeche_pro_korn_cm2 = 0.3  # grobe Annahme, gestreckter Reis
+        flaeche_pro_korn_cm2 = 0.3
         flaeche_m2 = koerner_gesamt * flaeche_pro_korn_cm2 / 10_000
 
-        vergleichsliste = [
+        gewicht_vergleiche = [
             ("eines 40-Tonnen-Lkw", 40),
             ("des Eiffelturms (10.100 t Stahl)", 10_100),
             ("der Cheops-Pyramide (5.750.000 t)", 5_750_000),
             ("der Weltjahresproduktion an Reis 2022/23 (520 Mio. t)", 520_000_000),
         ]
-        flaechenvergleich = [
+        flaechen_vergleiche = [
             ("eines Basketballfelds (420 m²)", 420),
             ("des Frankfurter Römerbergs (7.000 m²)", 7_000),
             ("des Frankfurter Flughafens (2.300.000 m²)", 2_300_000),
@@ -190,27 +212,16 @@ with tab1:
     with col2:
         st.subheader(f"Feld {feld_nummer} im Fokus")
         metric_row_1 = st.columns(3, gap="large")
-        with metric_row_1[0]:
-            st.metric("Reiskörner auf diesem Feld", format_number(koerner_auf_feld))
-        with metric_row_1[1]:
-            st.metric("Summe bis zu diesem Feld", format_number(koerner_gesamt))
-        with metric_row_1[2]:
-            st.metric("Gewicht in Tonnen", format_number(gewicht_tonnen, 2))
+        metric_row_1[0].metric("Reiskörner auf diesem Feld", format_number(koerner_auf_feld))
+        metric_row_1[1].metric("Summe bis zu diesem Feld", format_number(koerner_gesamt))
+        metric_row_1[2].metric("Gewicht in Tonnen", format_number(gewicht_tonnen, 2))
 
         metric_row_2 = st.columns(2, gap="large")
-        with metric_row_2[0]:
-            st.metric(
-                "Gewichtsvergleich",
-                best_comparison(gewicht_tonnen, vergleichsliste)
-            )
-        with metric_row_2[1]:
-            st.metric(
-                "Flächenbedarf beim Auslegen",
-                best_comparison(flaeche_m2, flaechenvergleich)
-            )
+        metric_row_2[0].metric("Gewichtsvergleich", best_comparison(gewicht_tonnen, gewicht_vergleiche))
+        metric_row_2[1].metric("Flächenbedarf beim Auslegen", best_comparison(flaeche_m2, flaechen_vergleiche))
 
         st.write("---")
-        st.caption("Der größte Teil der Gesamtmenge liegt auf den letzten Feldern – ein Paradebeispiel für den \"ketchup-Effekt\".")
+        st.caption("Der größte Teil der Gesamtmenge liegt auf den letzten Feldern – ein Paradebeispiel für den „Ketchup-Effekt“.")
 
     with st.expander("Visualisierung & Details"):
         df = pd.DataFrame({
@@ -235,10 +246,9 @@ with tab1:
 # Tab 2: Der Zinseszins
 # ------------------------------------------------------
 with tab2:
-    st.image(
+    render_cover_image(
         "https://images.unsplash.com/photo-1521572267360-ee0c2909d518?auto=format&fit=crop&w=1600&q=80",
-        caption="Der Zinseszins ist der leise Architekt beim Vermögensaufbau.",
-        use_column_width=True
+        "Der Zinseszins ist der leise Architekt beim Vermögensaufbau."
     )
 
     st.markdown(
@@ -312,10 +322,9 @@ with tab2:
 # Tab 3: Viraler Dominoeffekt
 # ------------------------------------------------------
 with tab3:
-    st.image(
+    render_cover_image(
         "https://images.unsplash.com/photo-1529333166437-7750a6dd5a70?auto=format&fit=crop&w=1600&q=80",
-        caption="Wenn eine Idee den Nerv trifft, vervielfacht sie sich in Wellen.",
-        use_column_width=True
+        "Wenn eine Idee den Nerv trifft, vervielfacht sie sich in Wellen."
     )
 
     st.markdown(
@@ -349,7 +358,7 @@ with tab3:
             kumulativ.append(total)
 
         gesamt = kumulativ[-1]
-        letzter_block = neu[-1] / gesamt if gesamt else 0
+        share_last_wave = neu[-1] / gesamt if gesamt else 0
 
         vergleich_pop = [
             ("des Deutsche-Bank-Parks (51.500 Plätze)", 51_500),
@@ -381,7 +390,7 @@ with tab3:
         metric_col = st.columns(3, gap="large")
         metric_col[0].metric("Gesamt erreicht", format_number(gesamt))
         metric_col[1].metric("Vergleich", best_comparison(gesamt, vergleich_pop))
-        metric_col[2].metric("Anteil letzte Welle", f"{letztter:=0.2%}" if (letztter := letzter_block) else "0 %")
+        metric_col[2].metric("Anteil letzte Welle", f"{share_last_wave:.0%}")
 
         if faktor <= 1:
             st.warning("Mit einem Multiplikator ≤ 1 verflacht der Trend. Erst bei >1 dominiert die exponentielle Phase.")
@@ -392,10 +401,9 @@ with tab3:
 # Tab 4: SaaS-Hypergrowth
 # ------------------------------------------------------
 with tab4:
-    st.image(
+    render_cover_image(
         "https://images.unsplash.com/photo-1521737604893-d14cc237f11d?auto=format&fit=crop&w=1600&q=80",
-        caption="Wenn Product-Market-Fit trifft, rast das Wachstum wie eine Rakete.",
-        use_column_width=True
+        "Wenn Product-Market-Fit trifft, rast das Wachstum wie eine Rakete."
     )
 
     st.markdown(
@@ -430,9 +438,10 @@ with tab4:
 
         gesamt_compound = compound_mrr[-1]
         gesamt_linear = linear_mrr[-1]
-        letzter_monat_anteil = (compound_mrr[-1] - compound_mrr[-2]) / (gesamt_compound - start_mrr) if gesamt_compound > start_mrr else 0
+        kumulatives_wachstum = compound_mrr[-1] - start_mrr
+        letzter_zuwachs = compound_mrr[-1] - compound_mrr[-2] if len(compound_mrr) > 1 else 0
+        share_last_month = letzter_zuwachs / kumulatives_wachstum if kumulatives_wachstum > 0 else 0
 
-        # Burn-Rate Abschätzung: Wie viel zusätzliches Team erforderlich?
         team_start = st.slider("Aktuelle FTE", 3, 200, 12)
         produktivitaet = st.slider("MRR pro FTE (€/Monat)", 1_000, 30_000, 12_000, 1_000)
         erforderliche_fte = gesamt_compound / produktivitaet
@@ -462,7 +471,7 @@ with tab4:
         metric_cols[0].metric("MRR nach Plan", f"{format_number(gesamt_compound, 0)} €")
         metric_cols[1].metric("Lineares Ziel", f"{format_number(gesamt_linear, 0)} €")
         metric_cols[2].metric("Zusätzliche FTE benötigt", format_number(fte_gap, 1))
-        metric_cols[3].metric("Anteil letzter Monat", f"{letzter_monat_anteil:.0%}")
+        metric_cols[3].metric("Anteil letzter Monat", f"{share_last_month:.0%}")
 
         st.caption("Fast die Hälfte des Gesamtwachstums findet in den letzten Monaten statt – bei 12 % Wachstum multipliziert sich das Geschäft von selbst.")
 
